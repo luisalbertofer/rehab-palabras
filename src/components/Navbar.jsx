@@ -1,21 +1,31 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
+  const { pathname } = useLocation();
+
+  const links = [
+    { to: "/", label: "Inicio", icon: "🏠" },
+    { to: "/training", label: "Auditivo", icon: "🎧" },
+    { to: "/training/frases", label: "Frases", icon: "🗣️" },
+    { to: "/training/fonologico", label: "Fonológico", icon: "🧩" }
+  ];
+
   return (
-    <nav className="p-4 bg-blue-100 flex gap-6 shadow-md">
-      <Link to="/" className="font-semibold text-blue-700 hover:underline">
-        Inicio
-      </Link>
-      <Link to="/admin" className="font-semibold text-blue-700 hover:underline">
-        Panel Admin
-      </Link>
-      <Link to="/training" className="font-semibold text-blue-700 hover:underline">
-        Entrenamiento Auditivo
-      </Link>
-      <Link to="/training/frases" className="font-semibold text-blue-700 hover:underline">
-        Entrenamiento con Frases  
-      </Link>
+    <nav className="p-4 bg-blue-100 flex gap-4 sm:gap-6 justify-center shadow-md flex-wrap">
+      {links.map((link) => (
+        <Link
+          key={link.to}
+          to={link.to}
+          className={`px-3 py-1 rounded font-semibold transition-all ${
+            pathname === link.to
+              ? "bg-blue-600 text-white shadow"
+              : "text-blue-700 hover:underline hover:text-blue-900"
+          }`}
+        >
+          <span className="mr-1">{link.icon}</span> {link.label}
+        </Link>
+      ))}
     </nav>
   );
 };

@@ -19,7 +19,7 @@ const client = new TextToSpeechClient();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const wordGroups = (await import('./wordGroups.js')).wordGroups;
+const wordGroups = (await import('./wordGroupsFonologico.js')).wordGroups;
 
 // Carpeta donde se guardarán los audios
 const outputDir = path.join(__dirname, 'audios');

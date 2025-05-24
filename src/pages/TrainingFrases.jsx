@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { wordGroups } from "../data/wordGroups";
+import AudioButton from "../components/AudioButton";
+import OptionsGrid from "../components/OptionsGrid";
+import SessionSummary from "../components/SessionSummary";
 import TrainingStats from "../components/TrainingStats";
-
-const frases = wordGroups["frases_breves"] || [];
-
-const getRandomOptions = (correct, all, n = 3) => {
-  const set = new Set([correct]);
-  while (set.size < n) {
-    const rand = all[Math.floor(Math.random() * all.length)];
-    set.add(rand);
-  }
-  return Array.from(set).sort(() => Math.random() - 0.5);
-};
+import { motion, AnimatePresence } from "framer-motion";
 
 const TrainingFrases = () => {
   const [currentFrase, setCurrentFrase] = useState("");
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [result, setResult] = useState(null);
+  const [totalAttempts, setTotalAttempts] = useState(0);
+  const [sessionOver, setSessionOver] = useState(false);
+  const [failedFrases, setFailedFrases] = useState([]);
+  const [repeatingFails, setRepeatingFails] = useState(false);
+
+  const frases = wordGroups["frases_breves"] || [];
 
   const [correctCount, setCorrectCount] = useState(() =>
     parseInt(localStorage.getItem("frases_correct") || "0")
@@ -38,9 +37,19 @@ const TrainingFrases = () => {
     localStorage.removeItem("frases_incorrect");
   };
 
+  const getRandomOptions = (correct, all, n = 3) => {
+    const set = new Set([correct]);
+    while (set.size < n) {
+      const rand = all[Math.floor(Math.random() * all.length)];
+      set.add(rand);
+    }
+    return Array.from(set).sort(() => Math.random() - 0.5);
+  };
+
   const pickNewFrase = () => {
-    const frase = frases[Math.floor(Math.random() * frases.length)];
-    const opts = getRandomOptions(frase, frases);
+    const source = repeatingFails ? failedFrases : frases;
+    const frase = source[Math.floor(Math.random() * source.length)];
+    const opts = getRandomOptions(frase, source);
     setCurrentFrase(frase);
     setOptions(opts);
     setSelected(null);
@@ -55,76 +64,102 @@ const TrainingFrases = () => {
     setSelected(option);
     const isCorrect = option === currentFrase;
     setResult(isCorrect ? "✅ ¡Correcto!" : "❌ Incorrecto");
+
     if (isCorrect) {
       setCorrectCount((prev) => prev + 1);
     } else {
       setIncorrectCount((prev) => prev + 1);
+      setFailedFrases((prev) => [...new Set([...prev, currentFrase])]);
     }
+
+    setTotalAttempts((prev) => {
+      const total = prev + 1;
+      if (total >= 10) setSessionOver(true);
+      return total;
+    });
   };
 
-  const playAudio = () => {
-    const file = currentFrase
+  const resetSession = () => {
+    setCorrectCount(0);
+    setIncorrectCount(0);
+    setTotalAttempts(0);
+    setSessionOver(false);
+    setRepeatingFails(false);
+    setFailedFrases([]);
+    pickNewFrase();
+  };
+
+  const repeatFailsOnly = () => {
+    setRepeatingFails(true);
+    setCorrectCount(0);
+    setIncorrectCount(0);
+    setTotalAttempts(0);
+    setSessionOver(false);
+    pickNewFrase();
+  };
+
+  // 🧠 Transformar frase a nombre de archivo (sin acentos, signos)
+  const fraseToFilename = (frase) =>
+    frase
       .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
       .replace(/[¿?¡!.,]/g, "")
       .replace(/\s+/g, "_");
 
-    const path = `/audios/frases_breves/${file}.mp3`;
-    const audio = new Audio(path);
-    audio.play();
-  };
-
   return (
-      <div className="p-6 max-w-xl mx-auto text-center space-y-6">
-        <h1 className="text-2xl font-bold">🗣️ Entrenamiento con Frases</h1>
+    <div className="p-6 max-w-xl mx-auto text-center space-y-6 bg-white shadow-md rounded-xl">
+      <h1 className="text-2xl font-bold">🗣️ Entrenamiento con Frases</h1>
 
-        <div>
-          <p className="mb-2">Escucha la frase y selecciona la correcta:</p>
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-            onClick={playAudio}
+      <p>Escucha la frase y selecciona la correcta:</p>
+      <AudioButton word={fraseToFilename(currentFrase)} group="frases_breves" />
+
+      <OptionsGrid
+        options={options}
+        currentWord={currentFrase}
+        selected={selected}
+        onSelect={handleOptionClick}
+      />
+
+      <AnimatePresence>
+        {result && (
+          <motion.p
+            key={result}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className={`text-lg font-semibold ${
+              result.includes("Correcto") ? "text-green-700" : "text-red-700"
+            }`}
           >
-            🔊 Reproducir frase
-          </button>
-        </div>
+            {result}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {options.map((option) => (
-            <button
-              key={option}
-              className={`border px-4 py-2 rounded ${
-                selected
-                  ? option === currentFrase
-                    ? "bg-green-200"
-                    : option === selected
-                    ? "bg-red-200"
-                    : "bg-gray-100"
-                  : "hover:bg-gray-100"
-              }`}
-              onClick={() => handleOptionClick(option)}
-              disabled={selected !== null}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
+      <TrainingStats
+        correctCount={correctCount}
+        incorrectCount={incorrectCount}
+        onReset={handleResetStats}
+      />
 
-        {result && <p className="text-lg font-semibold">{result}</p>}
-
-        <div>
-          <button
-            className="mt-4 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 transition"
-            onClick={pickNewFrase}
-          >
-            ▶️ Siguiente
-          </button>
-        </div>
-
-        <TrainingStats
-          correctCount={correctCount}
-          incorrectCount={incorrectCount}
-          onReset={handleResetStats}
+      {sessionOver ? (
+        <SessionSummary
+          correct={correctCount}
+          incorrect={incorrectCount}
+          failedWords={failedFrases}
+          onReset={resetSession}
+          onRepeatFails={repeatFailsOnly}
         />
-      </div>
+      ) : (
+        <button
+          onClick={pickNewFrase}
+          className="mt-4 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 transition"
+        >
+          ▶️ Siguiente
+        </button>
+      )}
+    </div>
   );
 };
 
