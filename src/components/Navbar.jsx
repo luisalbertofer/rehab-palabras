@@ -10,6 +10,12 @@ const Navbar = () => {
       <Link to="/admin" className="font-semibold text-blue-700 hover:underline">
         Panel Admin
       </Link>
+      <Link to="/training" className="font-semibold text-blue-700 hover:underline">
+        Entrenamiento Auditivo
+      </Link>
+      <Link to="/training/frases" className="font-semibold text-blue-700 hover:underline">
+        Entrenamiento con Frases  
+      </Link>
     </nav>
   );
 };

@@ -1,4 +1,7 @@
-// generateAudios.js
+// Genera audios para palabras/frases usando Google Cloud Text-to-Speech
+// Asegúrate de tener configurado tu entorno con las credenciales de Google Cloud
+// primero cd src/utils
+// y luego ejecuta este script con Node.js
 // node generateAudiosQwen.js
 
 import fs from 'fs';
