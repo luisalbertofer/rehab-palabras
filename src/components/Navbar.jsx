@@ -8,7 +8,8 @@ const Navbar = () => {
     { to: "/", label: "Inicio", icon: "🏠" },
     { to: "/training", label: "Auditivo", icon: "🎧" },
     { to: "/training/frases", label: "Frases", icon: "🗣️" },
-    { to: "/training/fonologico", label: "Fonológico", icon: "🧩" }
+    { to: "/training/fonologico", label: "Fonológico Consonantes", icon: "🧩" },
+    { to: "/training/fonologico-vocales", label: "Fonológico Vocales", icon: "🔤" }
   ];
 
   return (

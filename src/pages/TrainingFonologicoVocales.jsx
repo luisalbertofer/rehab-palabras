@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { phonologicalPairsByGroup } from "../data/phonologicalPairs";
+import { vowelPairsByGroup } from "../data/vowelPairsByGroup";
 import AudioButton from "../components/AudioButton";
 import OptionsGrid from "../components/OptionsGrid";
 import SessionSummary from "../components/SessionSummary";
 import TrainingStats from "../components/TrainingStats";
 import { motion, AnimatePresence } from "framer-motion";
 
-const TrainingFonologico = () => {
+const TrainingFonologicoVocales = () => {
+    const [selectedGroup, setSelectedGroup] = useState("todos");
+    const [pairs, setPairs] = useState([]);
     const [currentPair, setCurrentPair] = useState(null);
     const [selected, setSelected] = useState(null);
     const [result, setResult] = useState(null);
@@ -14,42 +16,37 @@ const TrainingFonologico = () => {
     const [sessionOver, setSessionOver] = useState(false);
     const [failedPairs, setFailedPairs] = useState([]);
     const [repeatingFails, setRepeatingFails] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState("todos");
-    const [pairs, setPairs] = useState([]);
 
     const [correctCount, setCorrectCount] = useState(() =>
-        parseInt(localStorage.getItem("fonologico_correct") || "0")
+        parseInt(localStorage.getItem("vocales_correct") || "0")
     );
     const [incorrectCount, setIncorrectCount] = useState(() =>
-        parseInt(localStorage.getItem("fonologico_incorrect") || "0")
+        parseInt(localStorage.getItem("vocales_incorrect") || "0")
     );
 
     useEffect(() => {
-        localStorage.setItem("fonologico_correct", correctCount);
-        localStorage.setItem("fonologico_incorrect", incorrectCount);
+        localStorage.setItem("vocales_correct", correctCount);
+        localStorage.setItem("vocales_incorrect", incorrectCount);
     }, [correctCount, incorrectCount]);
 
     useEffect(() => {
-        const allGroups = Object.entries(phonologicalPairsByGroup);
+        const allGroups = Object.entries(vowelPairsByGroup);
         const selectedPairs =
             selectedGroup === "todos"
                 ? allGroups.flatMap(([, group]) => group)
-                : phonologicalPairsByGroup[selectedGroup] || [];
+                : vowelPairsByGroup[selectedGroup] || [];
 
-        setPairs(selectedPairs);
-        pickNewPair(selectedPairs);
+        if (selectedPairs.length > 0) {
+            setPairs(selectedPairs);
+            pickNewPair(selectedPairs);
+        } else {
+            setPairs([]);
+            setCurrentPair(null);
+        }
     }, [selectedGroup]);
-
-    const handleResetStats = () => {
-        setCorrectCount(0);
-        setIncorrectCount(0);
-        localStorage.removeItem("fonologico_correct");
-        localStorage.removeItem("fonologico_incorrect");
-    };
 
     const pickNewPair = (sourceList = pairs) => {
         if (!sourceList || sourceList.length === 0) {
-            console.warn("⚠️ Lista de pares vacía. No se puede seleccionar.");
             setCurrentPair(null);
             return;
         }
@@ -61,11 +58,12 @@ const TrainingFonologico = () => {
         setResult(null);
     };
 
-
-
-    useEffect(() => {
-        pickNewPair();
-    }, []);
+    const handleResetStats = () => {
+        setCorrectCount(0);
+        setIncorrectCount(0);
+        localStorage.removeItem("vocales_correct");
+        localStorage.removeItem("vocales_incorrect");
+    };
 
     const handleOptionClick = (option) => {
         setSelected(option);
@@ -107,17 +105,17 @@ const TrainingFonologico = () => {
 
     return (
         <div className="p-6 max-w-xl mx-auto text-center space-y-6 bg-white shadow-md rounded-xl">
-            <h1 className="text-2xl font-bold">🔤 Entrenamiento Fonológico</h1>
+            <h1 className="text-2xl font-bold">🗣️ Discriminación de Vocales</h1>
 
             <div>
-                <label className="block font-semibold mb-2">🎯 Grupo fonológico:</label>
+                <label className="block font-semibold mb-2">🎯 Grupo vocálico:</label>
                 <select
                     className="w-full p-2 border rounded mb-4"
                     value={selectedGroup}
                     onChange={(e) => setSelectedGroup(e.target.value)}
                 >
                     <option value="todos">🌐 Todos</option>
-                    {Object.keys(phonologicalPairsByGroup).map((key) => (
+                    {Object.keys(vowelPairsByGroup).map((key) => (
                         <option key={key} value={key}>
                             /{key.replace("_", "/")}/
                         </option>
@@ -128,7 +126,7 @@ const TrainingFonologico = () => {
             {currentPair ? (
                 <>
                     <p>Escucha la palabra y selecciona cuál crees que es:</p>
-                    <AudioButton word={currentPair.correct} group="fonologico" />
+                    <AudioButton word={currentPair.correct} group="fonologico_vocales" />
 
                     <OptionsGrid
                         options={[currentPair.word1, currentPair.word2]}
@@ -138,9 +136,10 @@ const TrainingFonologico = () => {
                     />
                 </>
             ) : (
-                <p className="text-red-600 font-semibold">⚠️ No hay pares disponibles para este grupo.</p>
+                <p className="text-red-600 font-semibold">
+                    ⚠️ No hay pares disponibles para este grupo.
+                </p>
             )}
-
 
             <AnimatePresence>
                 {result && (
@@ -167,7 +166,7 @@ const TrainingFonologico = () => {
                 <SessionSummary
                     correct={correctCount}
                     incorrect={incorrectCount}
-                    failedWords={failedPairs.map(p => p.correct)}
+                    failedWords={failedPairs.map((p) => p.correct)}
                     onReset={resetSession}
                     onRepeatFails={repeatFailsOnly}
                 />
@@ -183,4 +182,4 @@ const TrainingFonologico = () => {
     );
 };
 
-export default TrainingFonologico;
+export default TrainingFonologicoVocales;
