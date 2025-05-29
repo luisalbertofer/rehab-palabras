@@ -1,70 +1,87 @@
 # 🎧 Rehabilitación Auditiva con React
 
-Este es un proyecto web de rehabilitación auditiva diseñado para personas con implante coclear. Permite entrenar la percepción auditiva a través de palabras, frases, fonología y contrastes entre sonidos.
+Este proyecto es una aplicación web diseñada para ayudar a personas con implante coclear a entrenar y mejorar su percepción auditiva. La plataforma ofrece distintos modos de entrenamiento—por ejemplo, reconocimiento de palabras, comprensión de frases y discriminación de sonidos fonológicos—para trabajar diversos aspectos de la audición de forma lúdica y progresiva.
 
-## 🚀 Tecnologías utilizadas
+## Objetivos del Proyecto
 
-- React 19
-- Vite
-- Tailwind CSS
-- React Router
-- Framer Motion
-- Google Cloud Text-to-Speech (para generación de audios)
-- Vite Plugin GitHub Pages (para despliegue)
+- **Mejorar la percepción auditiva:** Facilitar ejercicios que ayuden en la discriminación y reconocimiento de sonidos, palabras y frases.
+- **Entrenamiento adaptado:** Ofrecer distintos niveles y grupos temáticos, permitiendo entrenar tanto en aspectos generales como en contrastes específicos (por ejemplo, consonantes o vocales).
+- **Accesibilidad y usabilidad:** Desarrollado pensando en la accesibilidad para personas con implante coclear, con interfaces intuitivas y retroalimentación visual y auditiva en cada ejercicio.
 
-## 📁 Estructura de carpetas
+## Tecnologías Utilizadas
+
+- **[React](https://reactjs.org/)** 19 para el desarrollo de la interfaz.
+- **[Vite](https://vitejs.dev/)** para un entorno de desarrollo rápido y optimizado.
+- **[Tailwind CSS](https://tailwindcss.com/)** para el diseño y estilo responsivo.
+- **[React Router](https://reactrouter.com/)** para la navegación entre vistas.
+- **[Framer Motion](https://www.framer.com/motion/)** para animaciones fluidas y atractivas.
+- **Google Cloud Text-to-Speech** para la generación de audios con voces naturales.
+- **Vite Plugin GitHub Pages** para facilitar el despliegue en GitHub Pages.
+
+## Estructura del Proyecto
 
 ```
 src/
-├── components/        # Componentes reutilizables
-├── data/              # Listas de palabras y frases
-├── pages/             # Páginas principales del proyecto
-├── public/audios/     # Audios generados
+├── components/        # Componentes reutilizables (Navbar, Layout, AudioButton, etc.)
+├── data/              # Listas y conjuntos de palabras y frases
+├── pages/             # Páginas principales (Home, Training, etc.)
+└── utils/             # Scripts y utilidades (generación de audios, manejo de grupos de palabras)
+public/
+└── audios/            # Archivos de audio generados
 ```
 
-## 🧪 Scripts disponibles
+## Cómo Empezar
 
-| Comando          | Acción                                 |
-|------------------|----------------------------------------|
-| `npm run dev`    | Ejecuta el entorno de desarrollo       |
-| `npm run build`  | Genera la versión de producción        |
-| `npm run preview`| Previsualiza la build localmente       |
-| `npm run deploy` | Publica la web en GitHub Pages         |
+### Instalación
+1. Clona el repositorio:
+   ```sh
+   git clone https://github.com/TU_USUARIO/rehab-palabras.git
+   cd rehab-palabras
+   ```
+2. Instala las dependencias:
+   ```sh
+   npm install
+   ```
 
-## 🌐 Despliegue en GitHub Pages
-
-1. Asegúrate de que tu repositorio está publicado en GitHub (público o privado).
-2. En `vite.config.js`, añade:
-
-```js
-export default defineConfig({
-  base: '/NOMBRE_DEL_REPO/',
-  plugins: [react(), tailwindcss()],
-});
+### Ejecución en Desarrollo
+Para iniciar el entorno de desarrollo:
+```sh
+npm run dev
 ```
 
-3. Asegúrate de que `vite-plugin-gh-pages` está instalado:
-
-```
-npm install -D vite-plugin-gh-pages
-```
-
-4. Añade el script en tu `package.json`:
-
-```json
-"deploy": "vite build && vite-gh-pages --dir=dist"
+### Generar Audios
+Utiliza los scripts ubicados en `src/utils` para generar los audios de entrenamiento mediante Google Cloud TTS. Por ejemplo:
+```sh
+cd src/utils
+node generateAudiosQwen.js
 ```
 
-5. Ejecuta el despliegue:
+### Despliegue en GitHub Pages
+1. Asegúrate de que `vite.config.js` tenga el `base` correcto:
+   ```js
+   export default defineConfig({
+     base: '/rehab-palabras/',
+     plugins: [react(), tailwindcss()],
+   });
+   ```
+2. Instala el plugin:
+   ```sh
+   npm install -D vite-plugin-gh-pages
+   ```
+3. Actualiza el script de despliegue en `package.json`:
+   ```json
+   "deploy": "vite build && vite-gh-pages --dir=dist"
+   ```
+4. Ejecuta el despliegue:
+   ```sh
+   npm run deploy
+   ```
+La web se publicará en: `https://luisalbertofer.github.io/rehab-palabras`
 
-```
-npm run deploy
-```
+## Créditos
 
-Tu web se publicará en: `https://TU_USUARIO.github.io/NOMBRE_DEL_REPO`
+Desarrollado por [Luis Alberto Fernández](https://github.com/luisalbertofer) como herramienta de apoyo en el proceso de rehabilitación auditiva.
 
 ---
 
-## ✨ Créditos
-
-Desarrollado por Alberto Fernández como herramienta de ayuda para personas en proceso de rehabilitación auditiva.
+¡Esperamos que esta aplicación contribuya a mejorar la calidad de vida de quienes la utilicen!
