@@ -172,7 +172,7 @@ const TrainingFonologicoVocales = () => {
                 />
             ) : (
                 <button
-                    onClick={pickNewPair}
+                    onClick={() => pickNewPair()}
                     className="mt-4 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 transition"
                 >
                     ▶️ Siguiente

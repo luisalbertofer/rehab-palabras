@@ -36,8 +36,17 @@ const TrainingFonologico = () => {
                 ? allGroups.flatMap(([, group]) => group)
                 : phonologicalPairsByGroup[selectedGroup] || [];
 
+        if (!selectedPairs || selectedPairs.length === 0) {
+            console.warn(`⚠️ No hay pares disponibles para el grupo: ${selectedGroup}`);
+            setPairs([]);
+            setCurrentPair(null);
+            return;
+        }
+
+        console.log("🔍 Grupo seleccionado:", selectedGroup);
+        console.log("🔍 Pairs seleccionados:", selectedPairs);
+
         setPairs(selectedPairs);
-        pickNewPair(selectedPairs);
     }, [selectedGroup]);
 
     const handleResetStats = () => {
@@ -54,18 +63,28 @@ const TrainingFonologico = () => {
             return;
         }
 
-        const pair = sourceList[Math.floor(Math.random() * sourceList.length)];
+        const randomIndex = Math.floor(Math.random() * sourceList.length);
+        const pair = sourceList[randomIndex];
+
+        if (!pair || !pair.word1 || !pair.word2) {
+            console.error("⚠️ Par inválido encontrado:", pair, "en índice:", randomIndex);
+            setCurrentPair(null);
+            return;
+        }
+
         const correctWord = Math.random() < 0.5 ? pair.word1 : pair.word2;
         setCurrentPair({ ...pair, correct: correctWord });
         setSelected(null);
         setResult(null);
     };
 
-
-
     useEffect(() => {
-        pickNewPair();
-    }, []);
+        if (pairs.length > 0) {
+            pickNewPair();
+        } else {
+            console.warn("⚠️ No hay pares disponibles para el grupo seleccionado.");
+        }
+    }, [pairs]);
 
     const handleOptionClick = (option) => {
         setSelected(option);
@@ -173,7 +192,7 @@ const TrainingFonologico = () => {
                 />
             ) : (
                 <button
-                    onClick={pickNewPair}
+                    onClick={() => pickNewPair()}
                     className="mt-4 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 transition"
                 >
                     ▶️ Siguiente
