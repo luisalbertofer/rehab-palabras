@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+src/utils/alberto bebe.png
+src/utils/generatePodcastBebe.js
+src/utils/podcast_bebe.mp3

@@ -17,7 +17,15 @@ const Training = () => {
   const [failedWords, setFailedWords] = useState([]);
   const [repeatingFails, setRepeatingFails] = useState(false);
 
-  const words = wordGroups[selectedGroup] || [];
+  const getGroupWords = (group) => {
+    if (group.includes(".")) {
+      const [parent, child] = group.split(".");
+      return wordGroups[parent]?.[child] || [];
+    }
+    return wordGroups[group] || [];
+  };
+
+  const words = getGroupWords(selectedGroup);
 
   const [correctCount, setCorrectCount] = useState(() =>
     parseInt(localStorage.getItem("correctCount") || "0")
@@ -110,11 +118,54 @@ const Training = () => {
           value={selectedGroup}
           onChange={(e) => setSelectedGroup(e.target.value)}
         >
-          {Object.keys(wordGroups).map((group) => (
-            <option key={group} value={group}>
-              {group.replaceAll("_", " ").replace(/\b\w/g, l => l.toUpperCase())}
-            </option>
-          ))}
+          <optgroup label="🎯 Entrenamiento general">
+            <option value="palabras_comunes">Palabras comunes</option>
+            <option value="palabras_similares">Palabras similares</option>
+            <option value="palabras_con_acentos">Con acentos</option>
+            <option value="palabras_polisilabas">Polisílabas</option>
+          </optgroup>
+
+          <optgroup label="🔡 Fonología y vocales">
+            <option value="vocales">Vocales</option>
+            <option value="combinaciones_vocales">Combinaciones de vocales</option>
+            <option value="diptongos">Diptongos</option>
+            <option value="triptongos">Triptongos</option>
+            <option value="silabas_trabadas">Sílabas trabadas</option>
+          </optgroup>
+
+          <optgroup label="🗣️ Frases y comprensión verbal">
+            <option value="frases_breves">Frases breves</option>
+            <option value="frases_con_ruido">Frases con ruido</option>
+            <option value="oraciones_ambiguas">Oraciones ambiguas</option>
+            <option value="frases_con_entonacion">Frases con entonación</option>
+            <option value="preguntas_comunes">Preguntas comunes</option>
+            <option value="frases_tiempo_verbal">Frases con tiempos verbales</option>
+            <option value="frases_con_negacion">Frases con negación</option>
+            <option value="frases_con_sujeto_verbo">Sujeto + verbo</option>
+          </optgroup>
+
+          <optgroup label="🔢 Número de sílabas">
+            <option value="numero_de_silabas.dos_silabas">2 sílabas</option>
+            <option value="numero_de_silabas.tres_silabas">3 sílabas</option>
+            <option value="numero_de_silabas.cuatro_silabas">4 sílabas</option>
+          </optgroup>
+
+          <optgroup label="🏠 Temáticas cotidianas">
+            <option value="animales">Animales</option>
+            <option value="casa">Casa</option>
+            <option value="frutas">Frutas</option>
+            <option value="verduras">Verduras</option>
+            <option value="trabajo">Profesiones</option>
+            <option value="ciudad">Ciudad</option>
+            <option value="supermercado">Supermercado</option>
+            <option value="naturaleza">Naturaleza</option>
+            <option value="emociones">Emociones</option>
+            <option value="tiempo_clima">Tiempo / Clima</option>
+          </optgroup>
+
+          <optgroup label="🎵 Expresiones">
+            <option value="expresiones_sonoras">Interjecciones / expresiones</option>
+          </optgroup>
         </select>
       </div>
 
