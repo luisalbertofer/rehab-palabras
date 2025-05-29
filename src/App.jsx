@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Training from "./pages/Training";
 import TrainingFrases from "./pages/TrainingFrases";
@@ -9,9 +9,8 @@ import Layout from "./components/Layout";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter basename="/rehab-palabras/">
       <Routes>
-        {/* Envolver todas las rutas con Layout */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="training" element={<Training />} />
@@ -20,7 +19,7 @@ function App() {
           <Route path="training/fonologico-vocales" element={<TrainingFonologicoVocales />} />
         </Route>
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 export default App;
