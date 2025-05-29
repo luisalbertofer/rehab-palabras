@@ -3,7 +3,9 @@ import React from "react";
 
 const AudioButton = ({ word, group }) => {
   const playAudio = () => {
-    const path = `/audios/${group}/${word}.mp3`;
+    // Ajusta la ruta para incluir el prefijo base de GitHub Pages
+    const basePath = import.meta.env.BASE_URL; // Esto toma el valor de "base" en vite.config.js
+    const path = `${basePath}audios/${group}/${word}.mp3`;
 
     fetch(path)
       .then((res) => {
